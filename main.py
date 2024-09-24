@@ -1,48 +1,69 @@
+import sys
 import os
+import platform
 import requests
 
-# Configuration
-REPO_URL = "https://raw.githubusercontent.com/yourusername/yourrepo/main/main.py"  # URL to the latest version of the script
-LOCAL_FILE = "main.py"
+UTIL_FOLDER = "util"
+GITHUB_KEY_URL = "https://raw.githubusercontent.com/hackmeashdlajksdla/keys/refs/heads/main/README.md"  # Replace with actual URL
 
-def get_latest_version():
+def clear():
+    if platform.system() == 'Windows':
+        os.system('cls & title gdk nuker')
+    elif platform.system() == 'Linux' or platform.system() == 'Darwin':
+        os.system('clear')
+
+def open_info_py():
+    os.system(sys.executable + " " + os.path.join(UTIL_FOLDER, "info.py"))
+
+def open_login_py():
+    os.system(sys.executable + " " + os.path.join(UTIL_FOLDER, "login.py"))
+
+
+def get_valid_keys():
     try:
-        response = requests.get(REPO_URL)
+        response = requests.get(GITHUB_KEY_URL)
         response.raise_for_status()
-        return response.text
-    except requests.RequestException as e:
-        print(f"Error fetching the latest version: {e}")
-        return None
+        # Split by lines and strip whitespace
+        return [line.strip() for line in response.text.splitlines() if line.strip()]
+    except Exception as e:
+        print(f"Error fetching keys: {e}")
+        return []
 
-def check_for_update():
-    latest_version = get_latest_version()
-    if latest_version is None:
-        return False
+def check_key(key):
+    valid_keys = get_valid_keys()
+    return key in valid_keys
 
-    # Compare local and latest version
-    with open(LOCAL_FILE, 'r') as local_file:
-        local_version = local_file.read()
-
-    if latest_version != local_version:
-        print("Update available!")
+def input_key():
+    key = input("Please input your key: ")
+    if check_key(key):
+        print_banner()  # Print banner if the key is valid
         return True
     else:
-        print("You are using the latest version.")
-        return False
+        print("Invalid key. Exiting.")
+        sys.exit()
 
-def update_script():
-    latest_version = get_latest_version()
-    if latest_version:
-        with open(LOCAL_FILE, 'w') as local_file:
-            local_file.write(latest_version)
-        print("Update completed successfully.")
+def print_banner():
+    print("""                              
+██╗███╗   ██╗████████╗███████╗██╗     ██╗     
+██║████╗  ██║╚══██╔══╝██╔════╝██║     ██║     
+██║██╔██╗ ██║   ██║   █████╗  ██║     ██║     
+██║██║╚██╗██║   ██║   ██╔══╝  ██║     ██║     
+██║██║ ╚████║   ██║   ███████╗███████╗███████╗
+╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚══════╝╚══════╝""")
+    print("<:intell is made bye jack:>")
+    print(""" 
+1:login
+2:info
+""")
+    choice = input("Enter choice here: ")
 
-def main():
-    if check_for_update():
-        update_script()
+    clear()
 
-    # Continue with the rest of your main program logic
-    print("Running the main application...")
+    if choice == '1':
+        open_login_py()
+    elif choice == '2':
+        open_info_py()
 
-if __name__ == "__main__":
-    main()
+# Clear the console and prompt for the key
+clear()
+input_key()
